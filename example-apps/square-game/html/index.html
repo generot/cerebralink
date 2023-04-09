@@ -4,23 +4,38 @@
     html {
         background-color: black;
     }
+
+    .game-display {
+        position: absolute;
+        background-color: darkslategray;
+        border-color: darkcyan;
+        border-style: solid;
+        border-radius: 10px;
+        border-width: 5px;
+        margin: 9vw;
+    }
 </style>
 
 <html>
     <head>
         <title>Square game</title>
 
+        <!--Dosta e unscalable-->
+        <canvas class="game-display" id="cnv" width="1550" height="600"></canvas>
+
         <script src="../js/app.js"></script>
         <script src="../js/RectangleElement.js" defer></script>
-    </head>
-    <body>
+
         <script>
             start();
-        </script>
 
+            setInterval(update, 1000 / 60);
+        </script>
+    </head>
+    <body>
         <blinking-rect color="yellow" x="95" y="20" frequency="5"></blinking-rect>
         <blinking-rect color="yellow" x="1.5" y="20" frequency="7.5"></blinking-rect>
-        <blinking-rect color="yellow" x="43" y="2" frequency="10" rotated="true"></blinking-rect>
-        <blinking-rect color="yellow" x="43" y="45" frequency="12.5" rotated="true"></blinking-rect>
+        <blinking-rect color="yellow" x="44" y="2" frequency="10" rotated="true"></blinking-rect>
+        <blinking-rect color="yellow" x="44" y="45" frequency="12.5" rotated="true"></blinking-rect>
     </body>
 </html>
