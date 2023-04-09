@@ -1,0 +1,6 @@
+LPF cut-off freq ~ 37 Hz
+HPF cut-off freq ~ 2.9 Hz
+Swapped HPF and LPF
+
+Gins = 16.4
+G1 ~ 20
