@@ -8,8 +8,22 @@ const background = getComputedStyle(canvas).getPropertyValue("background-color")
 const playerWidth = 30;
 const speed = 10;
 
-let playerX = canvas.width / 2 - playerWidth / 2;
-let playerY = canvas.height / 2 - playerWidth / 2;
+const map = [
+    [100, 100, 600, 100],
+    [100, 100, 100, 200],
+    [200, 200, 700, 200],
+    [450, 200, 450, 500],
+    [450, 500, 800, 500],
+    [600, 350, 900, 350],
+    [900, 350, 900, 50],
+    [100, 300, 300, 300],
+    [200, 300, 200, 500],
+    [980, 150, 1200, 150],
+    [1200, 150, 1200, 450]
+]
+
+var playerX = canvas.width / 2 - playerWidth / 2;
+var playerY = canvas.height / 2 - playerWidth / 2;
 
 function drawRect(x, y, width, height, color) {
     ctx.fillStyle = color;
@@ -24,29 +38,25 @@ function clearCanvas() {
     drawRect(0, 0, canvas.width, canvas.height, background);
 }
 
-function start() {
+function drawMap() {
+    for(let wall of map) {
+        ctx.beginPath();
+        ctx.moveTo(wall[0], wall[1]);
+        ctx.lineTo(wall[2], wall[3]);
 
+        ctx.strokeStyle = 'yellow';
+        ctx.stroke();
+    }
+}
+
+function start() {
+    drawMap();
+    drawPlayer();
 }
 
 function update() {
     clearCanvas();
+
+    drawMap();
     drawPlayer();
 }
-
-//To be removed
-window.addEventListener("keypress", event => {
-    switch(event.key) {
-    case "w":
-        playerY -= speed;
-        break;
-    case "a":
-        playerX -= speed;
-        break;
-    case "s":
-        playerY += speed;
-        break;
-    case "d":
-        playerX += speed;
-        break;
-    }
-})
