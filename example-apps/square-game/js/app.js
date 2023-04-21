@@ -1,3 +1,5 @@
+var port = null;
+
 const canvas = document.getElementById("cnv");
 /**
  * @type CanvasRenderingContext2D
@@ -49,6 +51,64 @@ function drawMap() {
     }
 }
 
+function updatePosition(portReadings) {
+    //8 Hz -> Left
+    if(portReadings[1] > 2.5) {
+        playerX--;
+    }
+
+    //6 Hz -> Right
+    if(portReadings[0] > 2.5) {
+        playerX++;
+    }
+
+    //10 Hz -> Up
+    if(portReadings[2] > 2.5) {
+        playerY--;
+    }
+
+    //12 Hz -> Down
+    if(portReadings[3] > 2.5) {
+        playerY++;
+    }
+
+    update();
+}
+
+/**
+ * 
+ * @param {SerialPort} givenPort 
+ * @param {(arr: [Number]) => {}} callback 
+ */
+async function readFromPort(givenPort, callback) {
+    const textDecoder = new TextDecoder();
+
+    const reader = givenPort.readable.getReader();
+    let res = "";
+
+    while (true) {
+        const { value, done } = await reader.read();
+
+        if (done) {
+            reader.releaseLock();
+            break;
+        }
+
+        let str = textDecoder.decode(value);
+
+        if(!str.includes("$")) {
+            res += str;
+        } else {
+            res += str.split("$")[0];
+
+            let values = res.split(" ").map(x => Number(x));
+            callback(values);
+
+            res = "";
+        }
+    }
+}
+
 function start() {
     drawMap();
     drawPlayer();
@@ -60,3 +120,20 @@ function update() {
     drawMap();
     drawPlayer();
 }
+
+window.addEventListener("keydown", async event => {
+    switch(event.key) {
+    case "c":
+        port = await navigator.serial.requestPort();
+
+        await port.open({ baudRate: 9600 });
+        await readFromPort(port, updatePosition);
+        
+        break;
+    case "d":
+        if(port) {
+            await port.close();
+        }
+        break;
+    }
+});
