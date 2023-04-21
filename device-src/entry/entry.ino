@@ -15,6 +15,8 @@ double samples[MAX_SAMPLES];
 double magnitudes[MAX_SAMPLES];
 
 int input = 0;
+int prev_input = 0;
+
 int samples_ix = 0;
 
 unsigned long last_time = 0;
@@ -22,7 +24,7 @@ unsigned long last_time = 0;
 //Init FFT library.
 arduinoFFT fft = arduinoFFT(samples, magnitudes, MAX_SAMPLES, SAMPLING_FREQ);
 
-void getCorrespondingFreq(int i) {
+void getCorrespondingFreq(int i, String sep = "\n") {
   //i -> index of current sample [0; MAX_SAMPLES / 2]
   //freq_i = i * SAMPLING_FREQ / MAX_SAMPLES -> 
   // -> [0; MAX_SAMPLES / 2] (/ MAX_SAMPLES) ->
@@ -30,7 +32,7 @@ void getCorrespondingFreq(int i) {
   // -> [0; SAMPLING_FREQ / 2]
   float freq_i = (float)i * SAMPLING_FREQ / (float)MAX_SAMPLES;
 
-  Serial.print(String(samples[i] / 10) + "\n");
+  Serial.print(String(samples[i] / 10) + sep);
 }
 
 void setup() {
@@ -45,11 +47,12 @@ void loop() {
     
     if(curr_time - last_time >= PERIOD_MICROS) {
       if(input < 1024) {
-        samples[samples_ix++] = (double)input;
-        Serial.println(input);
+        samples[samples_ix++] = (double)(input);
+        //Serial.println(input - prev_input);
       }
 
       last_time = curr_time;
+      prev_input = input;
     }
   } else {  
     fft.Windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD);
@@ -59,13 +62,20 @@ void loop() {
 //    for(int i = 0; i < MAX_SAMPLES / 2; i++) {
 //      getCorrespondingFreq(i);
 //    }
-//  
+
+    getCorrespondingFreq(3, " ");
+    getCorrespondingFreq(4, " ");
+    getCorrespondingFreq(5, " ");
+    getCorrespondingFreq(6, "$");
+    Serial.print("\n");
+    
+
     for(int i = 0; i < MAX_SAMPLES; i++) {
       samples[i] = 0;
       magnitudes[i] = 0;
     }
 
-    Serial.print("Done\n");
+    //Serial.println("Done");
     samples_ix = 0;
   }
 }
